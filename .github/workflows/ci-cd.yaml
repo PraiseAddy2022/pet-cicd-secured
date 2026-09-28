@@ -307,16 +307,10 @@ jobs:
 
       - name: Download current ECS task definition
         run: |
-          TASK_DEF_ARN=$(aws ecs describe-services \
-            --cluster ${{ env.ECS_CLUSTER }} \
-            --services ${{ env.ECS_SERVICE }} \
-            --query 'services[0].taskDefinition' \
-            --output text)
           aws ecs describe-task-definition \
-            --task-definition "$TASK_DEF_ARN" \
+            --task-definition ${{ env.ECS_SERVICE }} \
             --query taskDefinition \
             --output json > task-definition.json
-
 
       - name: Render new image into task definition
         id: render-task-def
@@ -332,4 +326,4 @@ jobs:
           task-definition: ${{ steps.render-task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
           service: ${{ env.ECS_SERVICE }}
-          wait-for-service-stability: true          
+          wait-for-service-stability: true
